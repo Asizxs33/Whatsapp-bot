@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Бот Басқару</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 flex h-screen text-gray-800 font-sans">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-indigo-900 text-white flex flex-col shadow-xl">
+        <div class="p-6 border-b border-indigo-800">
+            <h1 class="text-2xl font-bold flex items-center">
+                <i class="fa-brands fa-whatsapp text-emerald-400 mr-2 text-3xl"></i>
+                Силлабус Бот
+            </h1>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <a href="/" class="flex items-center space-x-3 p-3 rounded-lg bg-indigo-800 font-medium">
+                <i class="fa-solid fa-robot w-6 text-center"></i>
+                <span>Ботты басқару</span>
+            </a>
+            <a href="/syllabus" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-indigo-800 transition">
+                <i class="fa-solid fa-book-open w-6 text-center"></i>
+                <span>Силлабус базасы</span>
+            </a>
+        </nav>
+        <div class="p-4 border-t border-indigo-800 text-sm text-indigo-300">
+            Жүйе: Node.js + Neon DB
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8 overflow-y-auto w-full">
+        <header class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800">Ботты басқару панелі</h2>
+            <p class="text-gray-500 mt-1">WhatsApp боттың жұмысын бақылау және басқару</p>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Бот Статусы -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Бот статусы</p>
+                    <div class="flex items-center">
+                        <% if (botRunning) { %>
+                            <span class="relative flex h-3 w-3 mr-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                            </span>
+                            <span class="text-2xl font-bold text-emerald-600">Қосулы</span>
+                        <% } else { %>
+                            <span class="inline-block h-3 w-3 rounded-full bg-red-400 mr-2"></span>
+                            <span class="text-2xl font-bold text-red-500">Өшірулі</span>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl">
+                    <i class="fa-solid fa-server text-2xl <%= botRunning ? 'text-emerald-500' : 'text-red-400' %>"></i>
+                </div>
+            </div>
+
+            <!-- Базадағы жазбалар -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Базадағы тақырыптар</p>
+                    <h3 class="text-2xl font-bold text-indigo-900"><%= totalTopics %></h3>
+                </div>
+                <div class="p-4 bg-indigo-50 rounded-xl">
+                    <i class="fa-solid fa-database text-2xl text-indigo-500"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Іс-әрекеттер -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-5 border-b border-gray-100 bg-gray-50 flex items-center">
+                <i class="fa-solid fa-toggle-on text-indigo-500 mr-2"></i>
+                <h3 class="font-semibold text-gray-800">Ботты іске қосу / өшіру</h3>
+            </div>
+            
+            <div class="p-8 flex flex-col items-center justify-center space-y-4">
+                <% if (!botRunning) { %>
+                    <div class="text-center max-w-md mb-4">
+                        <i class="fa-solid fa-power-off text-5xl text-gray-300 mb-4 inline-block"></i>
+                        <h4 class="text-lg font-medium text-gray-800">Бот қазір өшірулі</h4>
+                        <p class="text-gray-500 mt-2 text-sm">Ботты іске қосқан кезде терминалда (консольда) QR-код пайда болуы мүмкін (егер сессия ескірсе). Боттың қатесіз жұмыс істеуі үшін сервер консолін бақылап отырыңыз.</p>
+                    </div>
+                    
+                    <form action="/bot/start" method="POST" class="w-full max-w-xs">
+                        <button type="submit" class="w-full flex items-center justify-center space-x-2 bg-emerald-500 hover:bg-emerald-600 text-white py-3 px-6 rounded-xl font-medium transition shadow-sm shadow-emerald-200">
+                            <i class="fa-solid fa-play"></i>
+                            <span>Ботты іске қосу</span>
+                        </button>
+                    </form>
+                <% } else { %>
+                    <div class="text-center max-w-md mb-4">
+                        <i class="fa-solid fa-robot text-5xl text-emerald-400 mb-4 inline-block animate-bounce"></i>
+                        <h4 class="text-lg font-medium text-gray-800">Бот жұмыс істеп тұр</h4>
+                        <p class="text-gray-500 mt-2 text-sm">Бот WhatsApp желісінде хабарламаларды қабылдап, өңдеуде. Консольдан логтарды бақылай аласыз.</p>
+                    </div>
+
+                    <form action="/bot/stop" method="POST" class="w-full max-w-xs">
+                        <button type="submit" class="w-full flex items-center justify-center space-x-2 bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-xl font-medium transition shadow-sm shadow-red-200">
+                            <i class="fa-solid fa-stop"></i>
+                            <span>Ботты тоқтату</span>
+                        </button>
+                    </form>
+                <% } %>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>
