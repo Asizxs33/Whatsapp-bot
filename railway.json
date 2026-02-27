@@ -9,7 +9,7 @@
         "restartPolicyMaxRetries": 10,
         "volumes": {
             "data": {
-                "mountPath": "/usr/src/app/.wwebjs_auth"
+                "mountPath": "/usr/src/app/whatsapp_auth"
             }
         }
     }

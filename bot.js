@@ -14,7 +14,9 @@ const { parseQuickCommand, parseCommand, parseMenuChoice } = require('./parser/m
 // WhatsApp клиентін инициализация
 // ============================================
 const client = new Client({
-    authStrategy: new LocalAuth(),
+    authStrategy: new LocalAuth({
+        dataPath: path.join(__dirname, 'whatsapp_auth')
+    }),
     puppeteer: {
         headless: true,
         executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null,
