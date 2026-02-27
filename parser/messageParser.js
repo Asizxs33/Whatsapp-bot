@@ -66,7 +66,7 @@ function parseCommand(text) {
     if (lower === '!пәндер' || lower === '!пандер' || lower === '!предметы') {
         return 'subjects';
     }
-    if (lower === '!болдырмау' || lower === '!отмена' || lower === '!cancel') {
+    if (lower === 'стоп' || lower === 'stop' || lower === '!болдырмау' || lower === '!отмена') {
         return 'cancel';
     }
 
