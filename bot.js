@@ -75,8 +75,8 @@ client.on('disconnected', (reason) => {
 // Хабарламаларды өңдеу
 // ============================================
 client.on('message', async (message) => {
-    // Топтық чаттарды және статустарды (broadcast) елемеу
-    if (message.from.includes('@g.us') || message.from === 'status@broadcast' || message.isStatus) return;
+    // Статустарды (broadcast) елемеу
+    if (message.from === 'status@broadcast' || message.isStatus) return;
 
     const originalText = message.body.trim();
     if (!originalText) return;
