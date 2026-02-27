@@ -154,13 +154,7 @@ async function handleCommand(userId, command) {
 
         case 'cancel':
             resetSession(userId);
-            const subjects = await db.getSubjects();
-            let msg = config.messages.cancelled + '\n\n';
-            subjects.forEach((s, i) => {
-                msg += `${i + 1}. ${s}\n`;
-            });
-            updateSession(userId, { step: 'select_subject', subjectsList: subjects });
-            return msg;
+            return '✅ Толығымен тоқтатылды. Қажет болса "Аси Силабус" деп қайта бастай аласыз.';
     }
 }
 
