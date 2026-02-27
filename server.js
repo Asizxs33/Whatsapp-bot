@@ -1,6 +1,7 @@
 const express = require('express');
 const { spawn } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 const db = require('./db/database');
 
 const app = express();
@@ -11,6 +12,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true })); // формаларды оқу үшін
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public'))); // Статикалық файлдар үшін
 
 // Бот процесін сақтау
 let botProcess = null;
@@ -21,9 +23,12 @@ let botProcess = null;
 app.get('/', async (req, res) => {
     try {
         const stats = await db.pool.query('SELECT COUNT(*) as count FROM syllabus');
+        const qrExists = fs.existsSync(path.join(__dirname, 'public', 'qr.png'));
+
         res.render('index', {
             botRunning: !!botProcess,
-            totalTopics: stats.rows[0].count
+            totalTopics: stats.rows[0].count,
+            qrExists: qrExists
         });
     } catch (err) {
         res.status(500).send('Қате: ' + err.message);

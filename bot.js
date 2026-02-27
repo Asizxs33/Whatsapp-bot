@@ -1,5 +1,8 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
+const qrcodeTerminal = require('qrcode-terminal');
+const QRCode = require('qrcode');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 const db = require('./db/database');
@@ -27,13 +30,30 @@ const client = new Client({
 // QR-код көрсету
 client.on('qr', (qr) => {
     console.log('\n📱 QR-кодты WhatsApp-пен сканерлеңіз:\n');
-    qrcode.generate(qr, { small: true });
+    qrcodeTerminal.generate(qr, { small: true });
+
+    // Web интерфейс үшін сурет ретінде сақтау
+    QRCode.toFile(path.join(__dirname, 'public', 'qr.png'), qr, {
+        color: {
+            dark: '#000000',
+            light: '#ffffff'
+        }
+    }, function (err) {
+        if (err) console.error('QR сақтау қатесі:', err);
+        else console.log('✅ QR-код web интерфейс үшін сақталды (public/qr.png)');
+    });
 });
 
 // Сәтті қосылу
 client.on('ready', () => {
     console.log('\n✅ Бот іске қосылды! WhatsApp-қа сәтті қосылды.');
     console.log('📨 Хабарламаларды күтуде...\n');
+
+    // Қосылған соң QR файлды өшіру
+    const qrPath = path.join(__dirname, 'public', 'qr.png');
+    if (fs.existsSync(qrPath)) {
+        fs.unlinkSync(qrPath);
+    }
 });
 
 // Аутентификация сәтсіз
