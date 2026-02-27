@@ -156,18 +156,10 @@
                                                                             <td
                                                                                 class="px-6 py-4 text-right border-l border-gray-50">
                                                                                 <button
-                                                                                    onclick="openEditModal(<%= t.id %>, '<%= t.subject.replace(/'/g, "
-                                                                                    \\'") %>', '<%= t.type %>', <%=
-                                                                                            t.week %>, `<%=
-                                                                                                t.topic.replace(/`/g, '\\`'
-                                                                                                ) %>`)"
-                                                                                                class="text-indigo-500
-                                                                                                hover:text-indigo-700
-                                                                                                hover:bg-indigo-50 p-2
-                                                                                                rounded transition mr-1"
-                                                                                                title="Өзгерту">
-                                                                                                <i
-                                                                                                    class="fa-solid fa-pen"></i>
+                                                                                    onclick="openEditModal(<%= t.id %>, '<%= t.subject.replace(/'/g, '\\\'') %>', '<%= t.type %>', <%= t.week %>, `<%= t.topic.replace(/`/g, '\\`') %>`)"
+                                                                                    class="text-indigo-500 hover:text-indigo-700 hover:bg-indigo-50 p-2 rounded transition mr-1"
+                                                                                    title="Өзгерту">
+                                                                                    <i class="fa-solid fa-pen"></i>
                                                                                 </button>
                                                                                 <form
                                                                                     action="/syllabus/delete/<%= t.id %>"
