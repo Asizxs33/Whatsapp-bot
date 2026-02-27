@@ -61,14 +61,24 @@ app.post('/bot/stop', (req, res) => {
 // ===================================
 app.get('/syllabus', async (req, res) => {
     try {
-        const result = await db.pool.query('SELECT * FROM syllabus ORDER BY subject, week, type');
+        const result = await db.pool.query('SELECT * FROM syllabus ORDER BY subject, type, week');
+
+        // Пәндер бойынша топтастыру
+        const groupedTopics = {};
+        for (const row of result.rows) {
+            if (!groupedTopics[row.subject]) {
+                groupedTopics[row.subject] = [];
+            }
+            groupedTopics[row.subject].push(row);
+        }
+
         res.render('syllabus', {
-            topics: result.rows,
+            groupedTopics,
             error: null,
-            success: null
+            success: req.query.success || null
         });
     } catch (err) {
-        res.render('syllabus', { topics: [], error: err.message, success: null });
+        res.render('syllabus', { groupedTopics: {}, error: err.message, success: null });
     }
 });
 
@@ -76,10 +86,30 @@ app.post('/syllabus/add', async (req, res) => {
     const { subject, type, week, topic } = req.body;
     try {
         await db.addTopic(subject, type, parseInt(week), topic);
-        res.redirect('/syllabus?success=true');
+        res.redirect('/syllabus?success=add');
     } catch (err) {
-        const result = await db.pool.query('SELECT * FROM syllabus ORDER BY subject, week, type');
-        res.render('syllabus', { topics: result.rows, error: 'Қосу қатесі: ' + err.message, success: null });
+        const result = await db.pool.query('SELECT * FROM syllabus ORDER BY subject, type, week');
+        // ... топтастыру ...
+        const groupedTopics = {};
+        for (const row of result.rows) {
+            if (!groupedTopics[row.subject]) groupedTopics[row.subject] = [];
+            groupedTopics[row.subject].push(row);
+        }
+        res.render('syllabus', { groupedTopics, error: 'Қосу қатесі: ' + err.message, success: null });
+    }
+});
+
+app.post('/syllabus/edit/:id', async (req, res) => {
+    const id = req.params.id;
+    const { subject, type, week, topic } = req.body;
+    try {
+        await db.pool.query(
+            'UPDATE syllabus SET subject = $1, type = $2, week = $3, topic = $4 WHERE id = $5',
+            [subject, type, parseInt(week), topic, id]
+        );
+        res.redirect('/syllabus?success=update');
+    } catch (err) {
+        res.redirect('/syllabus?error=edit_failed');
     }
 });
 
