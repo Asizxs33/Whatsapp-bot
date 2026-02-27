@@ -33,7 +33,12 @@ client.on('qr', (qr) => {
     qrcodeTerminal.generate(qr, { small: true });
 
     // Web интерфейс үшін сурет ретінде сақтау
-    QRCode.toFile(path.join(__dirname, 'public', 'qr.png'), qr, {
+    const publicDir = path.join(__dirname, 'public');
+    if (!fs.existsSync(publicDir)) {
+        fs.mkdirSync(publicDir, { recursive: true });
+    }
+
+    QRCode.toFile(path.join(publicDir, 'qr.png'), qr, {
         color: {
             dark: '#000000',
             light: '#ffffff'
