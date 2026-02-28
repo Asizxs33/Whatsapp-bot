@@ -108,10 +108,12 @@ client.on('message', async (message) => {
                 const aiReply = await generateAIResponse(promptText);
                 await message.reply('🤖 ' + aiReply);
                 console.log(`📤 AI жауабы жіберілді`);
+                resetSession(userId); // Сессияны тазалау (болашақта қатып қалмас үшін)
                 return;
             } catch (error) {
                 console.error('❌ AI сұранысы қатесі:', error);
                 await message.reply('⚠️ Нейрожелі жауап бере алмады. Кейінірек көріңіз.');
+                resetSession(userId); // Қате болса да тазалаймыз
                 return;
             }
         }
