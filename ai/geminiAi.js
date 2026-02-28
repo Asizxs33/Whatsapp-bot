@@ -14,9 +14,9 @@ function initAI() {
 
     try {
         genAI = new GoogleGenerativeAI(apiKey);
-        // Using gemini-1.5-flash as it's fast and suitable for text tasks
+        // Using gemini-2.5-flash as it's available for this API key
         model = genAI.getGenerativeModel({
-            model: 'gemini-1.5-flash',
+            model: 'gemini-2.5-flash',
             systemInstruction: 'Сен силлабус анықтамалығының көмекші ботысың. Барлық сұрақтарға тек қана қазақ тілінде жауап бер. Егер лекция немесе бөж туралы сұраса, толық және пайдалы мәлімет бер.',
         });
         return true;
