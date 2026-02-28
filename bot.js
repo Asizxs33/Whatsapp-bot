@@ -25,7 +25,8 @@ const client = new Client({
             '--no-sandbox',
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
-            '--disable-gpu'
+            '--disable-gpu',
+            '--user-data-dir=/tmp/whatsapp_auth_chrome_profile_' + Math.random().toString(36).substring(7)
         ]
     }
 });
