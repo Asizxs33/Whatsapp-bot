@@ -9,6 +9,7 @@ const db = require('./db/database');
 const config = require('./config');
 const { getSession, updateSession, resetSession } = require('./session/sessionManager');
 const { parseQuickCommand, parseCommand, parseMenuChoice } = require('./parser/messageParser');
+const { generateAIResponse } = require('./ai/geminiAi');
 
 // ============================================
 // WhatsApp клиентін инициализация
@@ -89,12 +90,38 @@ client.on('message', async (message) => {
 
     let textToProcess = originalText;
 
-    // 1. Егер сессия жаңа (idle) болса, міндетті түрде "Аси Силабус" деп басталуы керек
+    // 1. ЖИ (AI) сұранысын тексеру. "ai " немесе "нейросеть " деп басталатын кез келген хабарлама
+    if (lowerText.startsWith('ai ') || lowerText.startsWith('нейросеть ') || lowerText.startsWith('нейрожелі ')) {
+        const promptText = lowerText.startsWith('ai ')
+            ? originalText.substring(3).trim()
+            : lowerText.startsWith('нейросеть ')
+                ? originalText.substring(10).trim()
+                : originalText.substring(10).trim();
+
+        if (promptText) {
+            console.log(`🧠 AI сұранысы қабылданды: ${promptText}`);
+            // Алдын ала хабарлама жіберу (AI жауабы бірнеше секунд алуы мүмкін)
+            await message.reply('⏳ Нейрожелі сұранысты өңдеуде, күте тұрыңыз...');
+
+            try {
+                const aiReply = await generateAIResponse(promptText);
+                await message.reply('🤖 ' + aiReply);
+                console.log(`📤 AI жауабы жіберілді`);
+                return;
+            } catch (error) {
+                console.error('❌ AI сұранысы қатесі:', error);
+                await message.reply('⚠️ Нейрожелі жауап бере алмады. Кейінірек көріңіз.');
+                return;
+            }
+        }
+    }
+
+    // 2. Егер сессия жаңа (idle) болса, міндетті түрде "Аси Силабус" деп басталуы керек
     if (session.step === 'idle' && !lowerText.startsWith('аси силабус')) {
         return;
     }
 
-    // 2. Егер хабарлама "Аси Силабус" деп басталса (кез келген қадамда)
+    // 3. Егер хабарлама "Аси Силабус" деп басталса (кез келген қадамда)
     if (lowerText.startsWith('аси силабус')) {
         textToProcess = originalText.substring(11).trim() || 'сәлем';
         // Мәзірді басынан бастау үшін сессияны тазалаймыз
