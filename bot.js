@@ -86,7 +86,7 @@ client.on('message_create', async (message) => {
     // Өзімізді-өзіміз тани алу үшін "fromMe" қолданамыз, бірақ шексіз циклге кірмеуіміз керек.
     // Боттың өз жауаптарына өзі жауап бермеуі үшін текстті тексереміз.
     const originalText = message.body.trim();
-    if (!originalText || originalText.startsWith('⏳') || originalText.startsWith('🤖') || originalText.startsWith('✅') || originalText.startsWith('⚠️') || originalText.startsWith('📚') || originalText.startsWith('📖') || originalText.startsWith('📅')) return;
+    if (!originalText || originalText.startsWith('⏳') || originalText.startsWith('🤖') || originalText.startsWith('✅') || originalText.startsWith('⚠️') || originalText.startsWith('📚') || originalText.startsWith('📖') || originalText.startsWith('📅') || originalText.startsWith('👋') || originalText.startsWith('😕')) return;
 
     const userId = message.from;
     const session = getSession(userId);
