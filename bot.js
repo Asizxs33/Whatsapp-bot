@@ -79,12 +79,14 @@ client.on('disconnected', (reason) => {
 // ============================================
 // Хабарламаларды өңдеу
 // ============================================
-client.on('message', async (message) => {
+client.on('message_create', async (message) => {
     // Статустарды (broadcast) елемеу
     if (message.from === 'status@broadcast' || message.isStatus) return;
 
+    // Өзімізді-өзіміз тани алу үшін "fromMe" қолданамыз, бірақ шексіз циклге кірмеуіміз керек.
+    // Боттың өз жауаптарына өзі жауап бермеуі үшін текстті тексереміз.
     const originalText = message.body.trim();
-    if (!originalText) return;
+    if (!originalText || originalText.startsWith('⏳') || originalText.startsWith('🤖') || originalText.startsWith('✅') || originalText.startsWith('⚠️') || originalText.startsWith('📚') || originalText.startsWith('📖') || originalText.startsWith('📅')) return;
 
     const userId = message.from;
     const session = getSession(userId);
