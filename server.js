@@ -16,6 +16,27 @@ app.use(express.static(path.join(__dirname, 'public'))); // Статикалық
 
 // Бот процесін сақтау
 let botProcess = null;
+let botEnabled = false; // Боттың автоматты қосылуын бақылау үшін
+
+function startBot() {
+    if (botProcess) return;
+
+    botProcess = spawn('node', ['bot.js'], { cwd: __dirname });
+
+    botProcess.stdout.on('data', data => console.log(`[Бот] ${data}`));
+    botProcess.stderr.on('data', data => console.error(`[Бот Қате] ${data}`));
+
+    botProcess.on('close', code => {
+        console.log(`[Бот] Өшірілді (код ${code})`);
+        botProcess = null;
+
+        // Егер ботты қолмен өшірмесек, оны 5 секундтан соң қайта қосамыз
+        if (botEnabled) {
+            console.log(`[Бот] 5 секундтан соң қайта қосылады...`);
+            setTimeout(startBot, 5000);
+        }
+    });
+}
 
 // ===================================
 // Басты бет (Дашборд)
@@ -39,21 +60,13 @@ app.get('/', async (req, res) => {
 // Ботты басқару (Қосу/Өшіру)
 // ===================================
 app.post('/bot/start', (req, res) => {
-    if (!botProcess) {
-        botProcess = spawn('node', ['bot.js'], { cwd: __dirname });
-
-        botProcess.stdout.on('data', data => console.log(`[Бот] ${data}`));
-        botProcess.stderr.on('data', data => console.error(`[Бот Қате] ${data}`));
-
-        botProcess.on('close', code => {
-            console.log(`[Бот] Өшірілді (код ${code})`);
-            botProcess = null;
-        });
-    }
+    botEnabled = true; // Автоматты қосылуды рұқсат ету
+    startBot();
     res.redirect('/');
 });
 
 app.post('/bot/stop', (req, res) => {
+    botEnabled = false; // Автоматты қосылуды тоқтату
     if (botProcess) {
         botProcess.kill('SIGINT');
         botProcess = null;
