@@ -26,6 +26,7 @@ const client = new Client({
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
             '--disable-gpu',
+            '--disk-cache-size=0', // Кэшті өшіру (орын алмас үшін)
             `--user-data-dir=${path.join(__dirname, 'whatsapp_auth', 'chrome_profile')}`
         ]
     }
