@@ -330,3 +330,14 @@ function formatResults(results) {
 console.log('🤖 Силлабус бот іске қосылуда...');
 console.log('📱 QR-код күтілуде...\n');
 client.initialize();
+
+// ============================================
+// Қателерді ұстап алу (Crash болдырмау үшін)
+// ============================================
+process.on('uncaughtException', (err) => {
+    console.error('❌ Күтпеген қате (Uncaught Exception):', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('❌ Өңделмеген уәде (Unhandled Rejection):', reason);
+});
