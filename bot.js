@@ -12,6 +12,26 @@ const { parseQuickCommand, parseCommand, parseMenuChoice } = require('./parser/m
 const { generateAIResponse } = require('./ai/geminiAi');
 
 // ============================================
+// Chrome Profile Lock өшіру (Browser Error алдыналу)
+// ============================================
+const chromeProfilePath = path.join(__dirname, 'whatsapp_auth', 'chrome_profile');
+const lockFiles = ['SingletonLock', 'SingletonCookie', 'SingletonSocket'];
+
+if (fs.existsSync(chromeProfilePath)) {
+    for (const file of lockFiles) {
+        const lockFilePath = path.join(chromeProfilePath, file);
+        if (fs.existsSync(lockFilePath)) {
+            try {
+                fs.unlinkSync(lockFilePath);
+                console.log(`🔓 Ескі құлып өшірілді: ${file}`);
+            } catch (err) {
+                console.error(`⚠️ Құлыпты өшіру қатесі (${file}):`, err.message);
+            }
+        }
+    }
+}
+
+// ============================================
 // WhatsApp клиентін инициализация
 // ============================================
 const client = new Client({
