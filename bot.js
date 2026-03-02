@@ -14,18 +14,25 @@ const { generateAIResponse } = require('./ai/geminiAi');
 // ============================================
 // Chrome Profile Lock өшіру (Browser Error алдыналу)
 // ============================================
-const chromeProfilePath = path.join(__dirname, 'whatsapp_auth', 'chrome_profile');
+const authPaths = [
+    path.join(__dirname, 'whatsapp_auth', 'session'),
+    path.join(__dirname, 'whatsapp_auth', 'session', 'Default'),
+    path.join(__dirname, '.wwebjs_auth', 'session'),
+    path.join(__dirname, '.wwebjs_auth', 'session', 'Default')
+];
 const lockFiles = ['SingletonLock', 'SingletonCookie', 'SingletonSocket'];
 
-if (fs.existsSync(chromeProfilePath)) {
-    for (const file of lockFiles) {
-        const lockFilePath = path.join(chromeProfilePath, file);
-        if (fs.existsSync(lockFilePath)) {
-            try {
-                fs.unlinkSync(lockFilePath);
-                console.log(`🔓 Ескі құлып өшірілді: ${file}`);
-            } catch (err) {
-                console.error(`⚠️ Құлыпты өшіру қатесі (${file}):`, err.message);
+for (const profilePath of authPaths) {
+    if (fs.existsSync(profilePath)) {
+        for (const file of lockFiles) {
+            const lockFilePath = path.join(profilePath, file);
+            if (fs.existsSync(lockFilePath)) {
+                try {
+                    fs.unlinkSync(lockFilePath);
+                    console.log(`🔓 Ескі құлып өшірілді: ${lockFilePath}`);
+                } catch (err) {
+                    console.error(`⚠️ Құлыпты өшіру қатесі (${lockFilePath}):`, err.message);
+                }
             }
         }
     }
@@ -48,8 +55,7 @@ const client = new Client({
             '--disable-gpu',
             '--single-process', // Бұғатталауды болдырмау үшін маңызды (Docker үшін)
             '--no-zygote',
-            '--disk-cache-size=0',
-            `--user-data-dir=${chromeProfilePath}`
+            '--disk-cache-size=0'
         ]
     }
 });
