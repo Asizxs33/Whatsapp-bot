@@ -84,6 +84,13 @@ client.on('message_create', async (message) => {
     if (message.from === 'status@broadcast' || message.isStatus) return;
 
     // Өзімізді-өзіміз тани алу үшін "fromMe" қолданамыз, бірақ шексіз циклге кірмеуіміз керек.
+    // Егер біз басқа адамға (досымызға) жазып отырсақ, бот араласпауы керек!
+    // Тек "Өзіме" (Избранное / Вы) жіберілген хабарламаларды қабылдаймыз.
+    if (message.fromMe && message.to !== client.info.wid._serialized) {
+        return;
+    }
+
+    // Өзімізді-өзіміз тани алу үшін "fromMe" қолданамыз, бірақ шексіз циклге кірмеуіміз керек.
     // Боттың өз жауаптарына өзі жауап бермеуі үшін текстті тексереміз.
     const originalText = message.body.trim();
     if (!originalText || originalText.startsWith('⏳') || originalText.startsWith('🤖') || originalText.startsWith('✅') || originalText.startsWith('⚠️') || originalText.startsWith('📚') || originalText.startsWith('📖') || originalText.startsWith('📅') || originalText.startsWith('👋') || originalText.startsWith('😕')) return;
